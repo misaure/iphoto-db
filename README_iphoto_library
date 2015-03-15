@@ -1,0 +1,24 @@
+AlbumData.xml
+ Keys:
+ * Application Version
+ * Archive Path
+ * ArchiveId
+ * Major Version
+ * Minor Version
+ * List of Albums
+ * List of Rolls
+ * List of Faces
+ * Master Image List
+
+=== Master Image List ===
+
+* ImagePath
+* ThumbPath
+
+=== List of Albums ===
+
+* AlbumId
+* AlbumName
+* Album Type
+* KeyList
+* KeyPhotoKey (opt)
