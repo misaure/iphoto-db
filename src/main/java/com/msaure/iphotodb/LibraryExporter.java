@@ -26,20 +26,23 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 /**
- * Copy all images from an iPhoto library to a given target directory. Only the
+ * Copy all images from an iPhoto library to a given target directory.
+ * 
+ * Only the
  * images itself will be copied. Thumbnails will be ignored. The exporter makes 
  * some primitive attempts to create a more intuitive directory structure than
  * iPhoto originally uses.
  */
 public class LibraryExporter {
 
-    private String targetDirectory;
+    private File targetDirectory;
 
     /**
-     * By default, iPhoto will assign a date as the title of a new Album. This 
+     * By default, iPhoto will assign a date as the title of a new Album.
+     * 
+     * This 
      * will most probably be represented in different formats, depending the a
      * user's locale settings. The pattern defined here works for my Mac, which
      * is configured to use DE_de.
@@ -63,7 +66,7 @@ public class LibraryExporter {
         createEventDirectories(library, targetDirectory);
     }
 
-    private void createEventDirectories(Library library, String targetDirectory) throws IOException {
+    private void createEventDirectories(Library library, File targetDirectory) throws IOException {
         // store all images in a map, so that they can be assigned to the album image lists
         final Map<Integer,ImageInfo> images = new HashMap<>();
         for (ImageInfo image: library.getAllImages()) {
@@ -71,7 +74,7 @@ public class LibraryExporter {
         }
         
         // create target directories for events and copy images to that directories
-        FileUtils.forceMkdir(new File(targetDirectory));
+        FileUtils.forceMkdir(targetDirectory);
         for (Album album: library.getAlbums()) {
             if (Album.Type.EVENT == album.getType()) {
                 File eventDirectory = createEventDirectory(album, targetDirectory);
@@ -82,7 +85,7 @@ public class LibraryExporter {
         }
         
         // copy remaining images to 'unsorted' directory
-        File unsortedDirectory = new File(FilenameUtils.concat(targetDirectory, "unsorted"));
+        File unsortedDirectory = new File(targetDirectory.getAbsolutePath(), "unsorted");
         FileUtils.forceMkdir(unsortedDirectory);
         
         for (Map.Entry<Integer,ImageInfo> entry: images.entrySet()) {
@@ -113,8 +116,8 @@ public class LibraryExporter {
         System.out.println(fileToCopy.getAbsolutePath() + " -> " + targetDirectory.getAbsolutePath());
     }
     
-    private File createEventDirectory(Album album, String targetDirectory) {
-        return new File(new File(targetDirectory), cleanFileName(album.getName()));
+    private File createEventDirectory(Album album, File targetDirectory) {
+        return new File(targetDirectory, cleanFileName(album.getName()));
     }
     
     private String cleanFileName(String originalFileName) {
@@ -139,11 +142,11 @@ public class LibraryExporter {
                 .replaceAll("\\s+", " ");
     }
 
-    public String getTargetDirectory() {
+    public File getTargetDirectory() {
         return targetDirectory;
     }
 
-    public void setTargetDirectory(String targetDirectory) {
+    public void setTargetDirectory(File targetDirectory) {
         this.targetDirectory = targetDirectory;
     }
     

@@ -8,46 +8,72 @@ import com.msaure.iphotodb.LibraryExporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Backup {
 
-    public static void main(String[] args) {
-        CmdOptions options = new CmdOptions();
+    private final JCommander cmd;
+    
+    public Backup(JCommander cmd)
+    {
+        this.cmd = cmd;
+    }
+    
+    public static void main(String[] args)
+    {
+        final CmdOptions options = new CmdOptions();
         JCommander cmd = new JCommander(options, args);
         cmd.setProgramName(Backup.class.getName());
         
+        final Backup backupTool = new Backup(cmd);
+        backupTool.run(options);
+    }
+    
+    public void run(CmdOptions options)
+    {
         if (options.help) {
             cmd.usage();
             System.exit(0);
         }
         
-        if (null != options.librarydir) {
+        if (null != options.librarydir && null != options.targetdir) {
             File libraryRootPath = new File(options.librarydir);
+            File targetDirectory = new File(options.targetdir);
             
-            LibraryAccess validator = new LibraryAccess();
-            if (validator.isValidLibrary(libraryRootPath)) {
-                try {
-                    Library library = validator.read(libraryRootPath);
-                    
-                    LibraryExporter exporter = new LibraryExporter();
-                    exporter.setTargetDirectory(options.targetdir);
-                    exporter.exportLibrary(library);
-                    
-                } catch (Exception ex) {
-                    Logger.getLogger(Backup.class.getName()).log(Level.SEVERE, "failed to read album property list", ex);
-                }
+            try {
+                copyLibrary(libraryRootPath, targetDirectory);
             }
-            else {
-                System.err.println(args[0] + " is not a valid iPhoto Library");
+            catch(RuntimeException e) {
+                System.err.println("error while trying to copy iPhoto library:");
+                System.err.println(e.getMessage());
                 System.exit(1);
             }
         }
         else {
-            System.err.println("usage: java com.msaure.iphotodb.Main <directory>");
+            cmd.usage();
             System.exit(1);
         }
+    }
+    
+    public void copyLibrary(File libraryRootPath, File targetDirectory) 
+    {
+        final LibraryAccess validator = new LibraryAccess();
+        
+        if (validator.isValidLibrary(libraryRootPath)) {
+            try {
+                final Library library = validator.read(libraryRootPath);
+
+                final LibraryExporter exporter = new LibraryExporter();
+                exporter.setTargetDirectory(targetDirectory);
+                exporter.exportLibrary(library);
+
+            }
+            catch (Exception ex) {
+                throw new RuntimeException("failed to read album property list", ex);
+            }
+        }
+        else {
+            throw new RuntimeException("invalid photo library at path " + libraryRootPath.getAbsolutePath());
+        }        
     }
     
     public static class CmdOptions {

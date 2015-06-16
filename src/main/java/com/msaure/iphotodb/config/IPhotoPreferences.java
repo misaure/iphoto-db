@@ -23,6 +23,10 @@ import java.net.URL;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * When trying to back up from the machine that is actually has the iPhoto instance installed, this class can be used to
+ * determine the current iPhoto library folder by checking the iPhoto preferences.
+ */
 public class IPhotoPreferences {
     
     private static final String CONFIG_FILE_NAME = "com.apple.iApps.plist";
@@ -32,12 +36,12 @@ public class IPhotoPreferences {
     private final File configDirectory;
 
     public IPhotoPreferences() {
-        String userHome = System.getProperty("user.home");
+        final String userHome = System.getProperty("user.home");
         if (null == userHome) {
             throw new RuntimeException("system property user.home not accessible");
         }
         
-        String libraryDirectory = FilenameUtils.concat(userHome, "Library");
+        final String libraryDirectory = FilenameUtils.concat(userHome, "Library");
         File libraryFile = new File(libraryDirectory);
         if (!libraryFile.exists() || !libraryFile.isDirectory()) {
             throw new RuntimeException("user library directory " + libraryFile.getAbsolutePath() + " not accessible");
