@@ -28,6 +28,6 @@ public class PropertyListParserTest {
     public void testIt() throws Exception
     {
         PropertyListParser parser = PropertyListParser.forInputStream(sampleFile);
-        parser.parse(null);
+        parser.parse(new DebugPropertyListParserHandler());  // TODO replace with mock
     }
 }

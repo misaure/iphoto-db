@@ -1,17 +1,18 @@
 package com.msaure.iphotodb.parser.stax;
 
-import com.msaure.iphotodb.parser.util.QNameStack;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import com.msaure.iphotodb.parser.util.QNameStack;
 
 public class StaxAlbumParser {
     

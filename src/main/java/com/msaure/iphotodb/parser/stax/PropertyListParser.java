@@ -52,15 +52,15 @@ public class PropertyListParser {
 
                 if (KEY_ELEMENT.equals(element.getName())) {
                     String keyName = parseKey();
-                    System.out.println("key: " + keyName);
+                    handler.keyNamed(this, keyName);
 
                 } else if (STRING_ELEMENT.equals(element.getName())) {
                     String stringValue = parseString();
-                    System.out.println("string: " + stringValue);
+                    handler.stringLiteral(this, stringValue);
 
                 } else if (INTEGER_ELEMENT.equals(element.getName())) {
                     Integer integerValue = parseInteger();
-                    System.out.println("integer: " + integerValue.toString());
+                    handler.integerLiteral(this, integerValue);
 
                 } else if (REAL_ELEMENT.equals(element.getName())) {
                     // TODO
@@ -76,11 +76,11 @@ public class PropertyListParser {
 
                 } else if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.DICTIONARY);
-                    System.out.println("dict begin");
+                    handler.dictionaryStart(this);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.ARRAY);
-                    System.out.println("array begin") ;
+                    handler.arrayStart(this);
 
                 }
 
@@ -89,11 +89,11 @@ public class PropertyListParser {
 
                 if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    System.out.println("dict end");
+                    handler.dictionaryEnd(this);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    System.out.println("array end");
+                    handler.arrayEnd(this);
                 }
             }
         }
