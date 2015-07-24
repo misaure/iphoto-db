@@ -27,8 +27,11 @@
 
 === Master Image List ===
 
-* ImagePath
-* ThumbPath
+(dict
+  (string ImagePath)
+  (string MediaType)
+  (string ThumbPath))
+
 
 === List of Albums ===
 
