@@ -26,6 +26,8 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * When trying to back up from the machine that is actually has the iPhoto instance installed, this class can be used to
  * determine the current iPhoto library folder by checking the iPhoto preferences.
+ * 
+ * TODO use new Property list parser once it is complete
  */
 public class IPhotoPreferences {
     
