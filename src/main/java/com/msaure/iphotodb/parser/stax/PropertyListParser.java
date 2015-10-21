@@ -65,18 +65,12 @@ public class PropertyListParser {
         }
     }
     
-    protected PropertyListEvent readEvent() throws IOException, XMLStreamException {
-        return parse(null);
-    }
-
     public boolean hasNext()
     {
         return State.AT_END != this.state;
     }
 
-    /** @deprecated */
-    @Deprecated
-    public PropertyListEvent parse(PropertyListParserHandler handler) throws IOException, XMLStreamException
+    protected PropertyListEvent readEvent() throws IOException, XMLStreamException
     {
         //this.containers = new Stack<>();
 
