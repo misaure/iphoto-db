@@ -4,14 +4,7 @@ import java.io.InputStream;
 
 import com.msaure.iphotodb.parser.PropertyListEventType;
 import static com.msaure.iphotodb.test.PLAssert.*;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
 import org.junit.Test;
 
 public class PropertyListParserTest {

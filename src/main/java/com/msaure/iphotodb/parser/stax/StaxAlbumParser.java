@@ -113,7 +113,7 @@ public class StaxAlbumParser {
     }
     
     public static void main(String[] args) {
-    	final File testFile = new File("/home/msaure/Projects/github/iphoto-db/testdata/AlbumData.xml");
+    	final File testFile = new File("/Users/msaure/Desktop/AlbumData.xml");
         
         StaxAlbumParser parser = new StaxAlbumParser();
         try (InputStream testStream = new FileInputStream(testFile)) {

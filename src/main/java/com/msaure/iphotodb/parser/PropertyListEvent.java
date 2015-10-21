@@ -4,6 +4,8 @@ import com.msaure.iphotodb.parser.stax.PropertyListParser;
 import java.util.EventObject;
 
 public class PropertyListEvent extends EventObject {
+    
+    private static final long serialVersionUID = 945260633891054246L;
 
     private PropertyListEventType eventType;
     private String stringValue;
@@ -61,4 +63,10 @@ public class PropertyListEvent extends EventObject {
     public static PropertyListEvent forData(PropertyListParser parser, String dataAsString) {
         return new PropertyListEvent(parser, PropertyListEventType.DATA, dataAsString);
     }
+
+    @Override
+    public String toString() {
+        return "PropertyListEvent{" + "eventType=" + eventType + ", stringValue=" + stringValue + ", integerValue=" + integerValue + '}';
+    }
+
 }

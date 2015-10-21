@@ -2,7 +2,8 @@ package com.msaure.iphotodb.parser.stax;
 
 import com.msaure.iphotodb.parser.PropertyListEvent;
 import com.msaure.iphotodb.parser.PropertyListEventType;
-import com.oracle.webservices.internal.api.message.PropertySet;
+import java.io.File;
+import java.io.FileInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,8 @@ public class PropertyListParser {
     private final XMLEventReader xml;
     private XMLEvent event;
     private Stack<ContainerType> containers;
+    private PropertyListEvent lookahead;
+    private State state = State.NEW;
 
     protected PropertyListParser(InputStream inputStream) throws XMLStreamException
     {
@@ -45,12 +48,30 @@ public class PropertyListParser {
     }
 
     public PropertyListEvent nextEvent() throws IOException, XMLStreamException {
+        if (null == this.lookahead) {
+            if (State.AT_END != this.state) {
+                PropertyListEvent next = readEvent();
+                lookahead = readEvent();
+                
+                return next;
+            } else {
+                return null;
+            }
+        } else {
+            PropertyListEvent next = this.lookahead;
+            this.lookahead = readEvent();
+            
+            return next;
+        }
+    }
+    
+    protected PropertyListEvent readEvent() throws IOException, XMLStreamException {
         return parse(null);
     }
 
     public boolean hasNext()
     {
-        throw new UnsupportedOperationException("not implemented");
+        return State.AT_END != this.state;
     }
 
     /** @deprecated */
@@ -68,17 +89,17 @@ public class PropertyListParser {
 
                 if (KEY_ELEMENT.equals(element.getName())) {
                     String keyName = parseKey();
-                    System.out.println("key: " + keyName);
+                    //System.out.println("key: " + keyName);
                     return PropertyListEvent.forKey(this, keyName);
 
                 } else if (STRING_ELEMENT.equals(element.getName())) {
                     String stringValue = parseString();
-                    System.out.println("string: " + stringValue);
+                    //System.out.println("string: " + stringValue);
                     return PropertyListEvent.forString(this, stringValue);
 
                 } else if (INTEGER_ELEMENT.equals(element.getName())) {
                     Integer integerValue = parseInteger();
-                    System.out.println("integer: " + integerValue.toString());
+                    //System.out.println("integer: " + integerValue.toString());
                     return PropertyListEvent.forInteger(this, integerValue);
 
                 } else if (REAL_ELEMENT.equals(element.getName())) {
@@ -87,7 +108,7 @@ public class PropertyListParser {
 
                 } else if (DATA_ELEMENT.equals(element.getName())) {
                     String dataAsString = parseData();
-                    System.out.println("data: " + dataAsString);
+                    //System.out.println("data: " + dataAsString);
                     return PropertyListEvent.forData(this, dataAsString);
 
                 } else if (FALSE_ELEMENT.equals(element.getName())) {
@@ -100,12 +121,12 @@ public class PropertyListParser {
 
                 } else if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.DICTIONARY);
-                    System.out.println("dict begin");
+                    //System.out.println("dict begin");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.DICTIONARY_START);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.ARRAY);
-                    System.out.println("array begin");
+                    //System.out.println("array begin");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.ARRAY_START);
                 }
 
@@ -114,13 +135,17 @@ public class PropertyListParser {
 
                 if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    System.out.println("dict end");
+                    //System.out.println("dict end");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.DICTIONARY_END);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    System.out.println("array end");
+                    //System.out.println("array end");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.ARRAY_END);
+                    
+                } else if (PLIST_ELEMENT.equals(element.getName())) {
+                    this.state = State.AT_END;
+                    return null;
                 }
             }
         }
@@ -250,5 +275,20 @@ public class PropertyListParser {
 
     static enum State {
         NEW, START_PLIST, INSIDE_PLIST, AT_END;
+    }
+    
+    public static void main(String[] args) {
+        for (String fileName: args) {
+            try (InputStream input = new FileInputStream(new File(fileName))) {
+                PropertyListParser parser = PropertyListParser.forInputStream(input);
+                
+                while (parser.hasNext()) {
+                    System.out.println(parser.nextEvent().toString());
+                }
+            }
+            catch(IOException | XMLStreamException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
