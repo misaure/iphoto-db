@@ -4,7 +4,10 @@ import java.io.InputStream;
 
 import com.msaure.iphotodb.parser.PropertyListEventType;
 import static com.msaure.iphotodb.test.PLAssert.*;
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class PropertyListParserTest {
@@ -18,7 +21,7 @@ public class PropertyListParserTest {
         PropertyListParser parser = PropertyListParser.forInputStream(sampleFile);
         assertNotNull(parser);
 
-        // assertTrue(parser.hasNext());
+        assertTrue(parser.hasNext());
 
         //assertEventType(PropertyListEventType.DOCUMENT_START, parser.nextEvent());
         assertEventType(PropertyListEventType.DICTIONARY_START, parser.nextEvent());
@@ -41,6 +44,6 @@ public class PropertyListParserTest {
         assertEventType(PropertyListEventType.DICTIONARY_END, parser.nextEvent());
         //assertEventType(PropertyListEventType.DOCUMENT_END, parser.nextEvent());
 
-        // assertFalse(parser.hasNext());
+        assertFalse(parser.hasNext());
     }
 }

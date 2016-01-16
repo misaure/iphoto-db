@@ -89,12 +89,10 @@ public class PropertyListParser {
 
                 } else if (STRING_ELEMENT.equals(element.getName())) {
                     String stringValue = parseString();
-                    //System.out.println("string: " + stringValue);
                     return PropertyListEvent.forString(this, stringValue);
 
                 } else if (INTEGER_ELEMENT.equals(element.getName())) {
                     Integer integerValue = parseInteger();
-                    //System.out.println("integer: " + integerValue.toString());
                     return PropertyListEvent.forInteger(this, integerValue);
 
                 } else if (REAL_ELEMENT.equals(element.getName())) {
@@ -103,7 +101,6 @@ public class PropertyListParser {
 
                 } else if (DATA_ELEMENT.equals(element.getName())) {
                     String dataAsString = parseData();
-                    //System.out.println("data: " + dataAsString);
                     return PropertyListEvent.forData(this, dataAsString);
 
                 } else if (FALSE_ELEMENT.equals(element.getName())) {
@@ -116,12 +113,10 @@ public class PropertyListParser {
 
                 } else if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.DICTIONARY);
-                    //System.out.println("dict begin");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.DICTIONARY_START);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.push(ContainerType.ARRAY);
-                    //System.out.println("array begin");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.ARRAY_START);
                 }
 
@@ -130,12 +125,10 @@ public class PropertyListParser {
 
                 if (DICTIONARY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    //System.out.println("dict end");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.DICTIONARY_END);
 
                 } else if (ARRAY_ELEMENT.equals(element.getName())) {
                     containers.pop();
-                    //System.out.println("array end");
                     return PropertyListEvent.forEventType(this, PropertyListEventType.ARRAY_END);
                     
                 } else if (PLIST_ELEMENT.equals(element.getName())) {
