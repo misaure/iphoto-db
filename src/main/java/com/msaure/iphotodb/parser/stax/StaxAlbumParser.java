@@ -13,12 +13,18 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import com.msaure.iphotodb.parser.util.QNameStack;
+import java.util.zip.GZIPInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StaxAlbumParser {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(StaxAlbumParser.class);
     
     public void parseAlbumlXml(InputStream inputStream) throws XMLStreamException
     {
         final XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         final XMLEventReader xml = factory.createXMLEventReader(inputStream);
 
         //int depth = 0;
@@ -60,13 +66,11 @@ public class StaxAlbumParser {
                     } else if (expectAlbumList && 4 == path.size()) {
                         if ("dict".equals(element.getName().getLocalPart())) {
                             ++albumCount;
-                            //System.out.println("  album from album list " + albumCount);
                         }
                         
                     } else if (expectMasterImageList && 4 == path.size()) {
                         if ("dict".equals(element.getName().getLocalPart())) {
                             ++imageCount;
-                            //System.out.println("  image from master" + imageCount);
                         }
                     }
                     
@@ -74,13 +78,19 @@ public class StaxAlbumParser {
                     if (insideKeyElement) {
                     	currentKey = event.asCharacters().getData();
                     	
-                        if ("List of Albums".equals(currentKey)) {
-                            expectAlbumList = true;
-                            System.out.println("List of albums");
-                            
-                        } else if ("Master Image List".equals(currentKey)) {
-                            expectMasterImageList = true;
-                            System.out.println("Master album");
+                        if (null != currentKey) {
+                            switch (currentKey) {
+                            case "List of Albums":
+                                expectAlbumList = true;
+                                //System.out.println("List of albums");
+                                LOG.debug("found 'List of albums'");
+                                break;
+                            case "Master Image List":
+                                expectMasterImageList = true;
+                                //System.out.println("Master album");
+                                LOG.debug("found 'Master Image List'");
+                                break;
+                            }
                         }
                     }
                     
@@ -108,15 +118,15 @@ public class StaxAlbumParser {
             xml.close();
         }
         
-        System.out.println("album count: " + albumCount);
-        System.out.println("image count: " + imageCount);
+        LOG.info("album count: {}", albumCount);
+        LOG.info("image count: {}", imageCount);
     }
     
     public static void main(String[] args) {
-    	final File testFile = new File("/Users/msaure/Desktop/AlbumData.xml");
+    	final File testFile = new File("/Users/msaure/Desktop/AlbumData.xml.gz");
         
         StaxAlbumParser parser = new StaxAlbumParser();
-        try (InputStream testStream = new FileInputStream(testFile)) {
+        try (InputStream testStream = new GZIPInputStream(new FileInputStream(testFile))) {
             parser.parseAlbumlXml(testStream);
         }
         catch (XMLStreamException | IOException e) {

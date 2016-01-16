@@ -38,6 +38,7 @@ public class PropertyListParser {
     protected PropertyListParser(InputStream inputStream) throws XMLStreamException
     {
         XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
 		this.xml = factory.createXMLEventReader(inputStream);
         this.containers = new Stack<>();
     }
